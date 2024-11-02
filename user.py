@@ -1,4 +1,4 @@
-from tabulate import tabulate # type: ignore
+from tabulate import tabulate
 
 class User:
     #data user
@@ -76,3 +76,84 @@ class User:
             print(tabulate(benefit_user, headers_user))
         else:
             print("Anda belum berlangganan")
+
+    def upgrade_plan(self, new_plan):
+        '''
+        untuk melakukan upgrade plan
+
+        parameter:
+            new_plan (str)
+        '''
+        #mengecek apakah user sudah berlangganan dan new plan ada di list plan
+        if self.current_plan is not None and new_plan in self.list_plan:
+            idx_current_plan = self.list_plan.index(self.current_plan)
+            idx_new_plan = self.list_plan.index(new_plan)
+
+            #kondisi dimana syarat upgrade plan
+            if idx_new_plan > idx_current_plan:
+                #do upgrade
+                if self.duration_plan > 12:
+                    #mendapat diskon
+                    total = self.table[-1][idx_new_plan] - (self.table[-1][idx_new_plan] * 0.05)
+                else:
+                    #harga normal
+                    total = self.table[-1][idx_new_plan]
+
+                print(f'Harga upgrade ke {new_plan} adalah Rp. {total}')
+
+            elif idx_new_plan == idx_current_plan:
+                print(f'Anda sedang berlangganan {new_plan}')
+            else:
+                print(f'Anda tidak bisa downgrade ke {new_plan}')
+            
+            #Update data user new plan
+            self.current_plan = new_plan
+            for key, value in self.data_user.items():
+                if self.username == value[0]:
+                    self.data_user[key][1] = new_plan
+                    break
+
+
+        elif new_plan not in self.list_plan:
+            print("New Plan tidak tersedia")
+        elif self.current_plan is None:
+            print("Silahkan berlangganan terlebih dahulu")
+
+    def subs_plan(self, new_plan, kode_referral):
+        '''
+        untuk subscribe unutk user baru
+
+        parameters:
+            -new_plan (str)
+            -kode_referral (str)
+        '''
+
+        list_code = [row[-1]for row in self.data_user.values()]
+
+        if self.current_plan is None:
+
+            if new_plan in self.list_plan:
+                #do subscribre
+                self.current_plan = new_plan
+                self.duration_plan = 1
+                self.kode_refferal = f"{self.username}-123"
+
+                idx_new_plan = self.list_plan.index(new_plan)
+                #menampilkan harga
+                if kode_referral in list_code:
+                    #dapat diskon
+                    total = self.table[-1][idx_new_plan] - (self.table[-1][idx_new_plan] * 0.04)
+                else:
+                    total = self.table[-1][idx_new_plan]
+                print(f'Harga yang harus dibayar untuk subs {new_plan} adalah Rp. {total}')
+
+                #tambahan user baru
+                last_key = max(self.data_user.keys())
+                self.data_user[last_key+1] = [self.username, self.current_plan, self.duration_plan, self.kode_refferal]
+
+
+            else:
+                print("Plan tidak tersedia")
+        else:
+            print("Anda sudah berlangganan")
+
