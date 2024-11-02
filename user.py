@@ -1,4 +1,4 @@
-from tabulate import tabulate
+from tabulate import tabulate # type: ignore
 
 class User:
     #data user
@@ -52,4 +52,27 @@ class User:
             none
         '''
         print("List Benefit and Plan From Pacflix")
+        print("....")
         print(tabulate(self.table, self.headers)) 
+    
+    def check_user_plan(self):
+        '''
+        untuk menampilkan user plan dan benefitnya current user
+        
+        parameters:
+            none
+        '''
+        if(self.current_plan):
+            print(f"{self.username} sedang berlangganan {self.current_plan}")
+            print("Benefit")
+
+            #mencari indek current plan pada list data
+            idx_current_plan = self.list_plan.index(self.current_plan)
+            #menampilkan header current plan dan servisnya
+            headers_user = [self.headers[idx_current_plan], self.headers[-1]]
+            #menampilkan data tablenya berdasarkan current user
+            benefit_user = [[row[idx_current_plan], row[-1]] for row in self.table]
+
+            print(tabulate(benefit_user, headers_user))
+        else:
+            print("Anda belum berlangganan")
